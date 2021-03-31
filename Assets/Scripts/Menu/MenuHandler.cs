@@ -10,4 +10,9 @@ public class MenuHandler : MonoBehaviour
     {
         if(anim!=null) anim.SetTrigger("IntoOption");
     }
+
+    public void backToMainMenu()
+    {
+        if (anim != null) anim.SetTrigger("OutOption");
+    }
 }

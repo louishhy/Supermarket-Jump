@@ -10,13 +10,29 @@ public class GroupLogoScene : MonoBehaviour
     [SerializeField] private float fadeInAnimTime = 2.5f;
     [SerializeField] private float fadeOutAnimTime = 2.0f;
     [SerializeField] private Animator anim;
+    [SerializeField] private bool alreadyInvokedGoingOut = false;
+    [SerializeField] private string goingInAnimName = "Group_Logo_Scene_Fade_In";
+    [SerializeField] private string goingOutAnimName = "Group_Logo_Scene_Fade_Out";
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
-        Invoke("setAnimTrigger", fadeInAnimTime + waitingTime);
-        Invoke("loadMenuScene", fadeInAnimTime + waitingTime + fadeOutAnimTime);
+    }
+
+    private void Update()
+    {
+        //Wait for goingInAnim to play to an end, then wait for waitingTime to set trigger.
+        AnimatorStateInfo animInfo = anim.GetCurrentAnimatorStateInfo(0);
+        if (animInfo.IsName(goingInAnimName) && animInfo.normalizedTime >1.0f && !alreadyInvokedGoingOut)
+        {
+            Invoke("setAnimTrigger", waitingTime);
+        }
+
+        if (animInfo.IsName(goingOutAnimName) && animInfo.normalizedTime > 1.0f)
+        {
+            Invoke("loadMenuScene", waitingTime);
+        }
     }
 
     void setAnimTrigger()
