@@ -9,6 +9,12 @@ public class MenuHandler : MonoBehaviour
     [SerializeField] private Animator intoGameAnim;
     [SerializeField] private string intoGameAnimationName = "Menu-to-game-menu";
 
+    private void Update()
+    {
+        
+    }
+
+
     public void setOptionTrigger()
     {
         if(menuAnim != null) menuAnim.SetTrigger("IntoOption");
@@ -22,6 +28,7 @@ public class MenuHandler : MonoBehaviour
     public void startingGame()
     {
         if (intoGameAnim != null) intoGameAnim.SetTrigger("IntoGame");
+        if (menuAnim != null) menuAnim.SetTrigger("IntoGame");
         StartCoroutine("loadGame");
     }
 

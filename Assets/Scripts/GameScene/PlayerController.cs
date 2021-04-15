@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
     Rigidbody rb;                       
@@ -10,7 +11,8 @@ public class PlayerController : MonoBehaviour
     public float maxChargeTime;         
     public float jumpPower;             
     public bool doJump;                
-    public bool isGround = true;               
+    public bool isGround = true;
+    [SerializeField] private float chargeDeadZone = 0.5f;
 
     void Start()
     {
@@ -20,13 +22,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0) && timer < maxChargeTime && isGround == true)                                                      
+        if (Input.GetKey(KeyCode.Space) && timer < maxChargeTime && isGround == true)                                                      
         {
             timer += Time.deltaTime;                                                                                    
             transform.localScale = new Vector3(1, 0.5f + ((maxChargeTime - timer) / maxChargeTime) / 2, 1) * 0.2f;      
         }                                                                                                               
                                                                                                                         
-        if (Input.GetKeyUp(KeyCode.Mouse0)  && isGround == true)
+        if (Input.GetKeyUp(KeyCode.Space)  && isGround == true)
         {
             doJump = true;                                                                                              
             transform.localScale = Vector3.one * 0.2f;
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         if(doJump)
         {
-            Jump();
+            if (jumpPower * timer >= chargeDeadZone) Jump();
             timer = 0;
             doJump = false;
         }
