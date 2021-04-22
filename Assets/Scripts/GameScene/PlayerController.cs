@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public bool doJump;                
     public bool isGround = true;
     [SerializeField] private float chargeDeadZone = 0.5f;
+    [SerializeField] private float frenzyDuration = 5.0f;
 
     void Start()
     {
@@ -55,20 +56,48 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("On collision with:" + collision.gameObject.name);
         if (collision.gameObject.tag == "Ground")                    
-        {
-            GameManager.S.HitGround(transform.position);                                                                
+        {                                                                
             rb.velocity = Vector3.zero;                                                                                 
-            rb.rotation = Quaternion.identity;
+            //rb.rotation = Quaternion.identity;
             isGround = true;
         }
-        else if (collision.gameObject.tag == "Cube")
+        else if (collision.collider.gameObject.tag == "DeadlyObstacle")
         {
-            isGround = true;
+            GameManager.S.GameOver(transform.position);
+            Destroy(gameObject);
         }
         else if(collision.gameObject.tag == "Plane")                                                              
         {
-            GameManager.S.GameOver();
+            GameManager.S.GameOver(transform.position);
+            Destroy(gameObject);
+        }
+        else if (collision.collider.gameObject.tag == "Obstacle")
+        {
+            isGround = true;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "InvincibleTrigger")
+        {
+            FrenzyModeOn();
+        }
+    }
+
+    private void FrenzyModeOn()
+    {
+        AfterEffectsManager.AEM.setInvincibleEffect(true);
+        GameManager.S.SetFrenzy(true);
+        Invoke("FrenzyModeOff", frenzyDuration);
+    }
+
+    private void FrenzyModeOff()
+    {
+        AfterEffectsManager.AEM.setInvincibleEffect(false);
+        GameManager.S.SetFrenzy(false);
+    }
+
 }

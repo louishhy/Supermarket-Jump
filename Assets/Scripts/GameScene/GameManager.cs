@@ -7,6 +7,15 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    //Object index description
+    public const int CHAIR = 0;
+    public const int BASKET = 1;
+    public const int COLA = 2;
+    public const int TISSUE = 3;
+    public const int BOX = 4;
+    public const int JACK_IN_THE_BOX = 5;
+    public const int PAINT_TIN = 6;
+
     public static GameManager S;
     [SerializeField] private GameObject endGameCanvas;
     [SerializeField] private Animator anim;
@@ -19,20 +28,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image circleImg;
     [SerializeField] private Belt belt;
     [SerializeField] private float beginningBeltSpeed = 1.0f;
+    [SerializeField] private bool isFrenzy = false;
+    [SerializeField] private float frenzyBonusRate = 5.0f;
+    [SerializeField] private GameObject frenzyNotice;
+
+    public Vector3 presentPos;
+    public GameObject[] cubePrefabs;
+    [SerializeField] private bool[] prefabAlreadyGenerated;
+    [SerializeField] private Vector3[] prefabDefaultGeneratingPoint;
+    [SerializeField] private Vector3[] prefabDefaultGeneratingEuler;
+    public float minTime;
+    public float maxTime;
+    private float time;
+    private float generateTime;
+
     void Awake()
     {
         S = this;
     }
 
-    public Vector3 presentPos;
-    public GameObject[] cubePrefabs;
-    float score;                          
-
-
-    public float minTime;
-    public float maxTime;
-    private float time;
-    private float generateTime;
+    
 
     void Start()
     {
@@ -72,37 +87,29 @@ public class GameManager : MonoBehaviour
     {
         if (!gameEnded)
         {
-            survivedTime += Time.deltaTime;
+            if (isFrenzy == false) survivedTime += Time.deltaTime;
+            else survivedTime += frenzyBonusRate * Time.deltaTime;
             scoreTextOnGUI.text = survivedTime.ToString("f1");
         }
 
-        //After effects test Interface. Plz disable after test.
-        /*if (Input.GetKeyDown(KeyCode.K))
-        {
-            AfterEffectsManager.AEM.setInvincibleEffect(true);
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            AfterEffectsManager.AEM.setInvincibleEffect(false);
-        }*/
+    }
 
-        //Notice test interface. Plz disable after test.
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            NoticeManager.NM.StartUI();
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            NoticeManager.NM.SetText("Test");
-        }
+    public void SetFrenzy(bool isFrenzy)
+    {
+        this.isFrenzy = isFrenzy;
+        frenzyNotice.SetActive(isFrenzy);
     }
 
     void GenerateNewCube(int index)
     {
-    //    GameObject tmp = new GameObject();
-    //    tmp = cubePrefabs[index];
-        Instantiate(cubePrefabs[index], new Vector3(0, 0.7f, 17), new Quaternion(0, 0, 0, 0));
-    //    Destroy(tmp, 10);
+        Instantiate(cubePrefabs[index], prefabDefaultGeneratingPoint[index], Quaternion.Euler(prefabDefaultGeneratingEuler[index]));
+        if(prefabAlreadyGenerated[index] == false)
+        {
+            NoticeManager.NM.SetImage(index);
+            NoticeManager.NM.SetText(index);
+            NoticeManager.NM.StartUI();
+            prefabAlreadyGenerated[index] = true;
+        }
     }
 
     void SetGenerateTime()
@@ -112,23 +119,15 @@ public class GameManager : MonoBehaviour
 
     public int GenerateIndex()
     {
-        int index = Random.Range(0, 6);
+        int index = Random.Range(0, 7);
         return index;
     }
 
-    public void HitGround(Vector3 hitPos)                                                                   
-    {                                                        
-    /*    Vector3 hit = hitPos;                                                                               
-        hit.y = 0;                                                                                          
-        Vector3 cubePos = currentCube.position;
-        cubePos.y = 0;
+    
 
-        float dist = Vector3.Distance(hit, cubePos);                                                       
-        score += dist;*/
-    }
-
-    public void GameOver()                                                                                  
+    public void GameOver(Vector3 overPosition)                                                                                  
     {
+        AfterEffectsManager.AEM.StartDeathParticleEffect(overPosition);
         gameEnded = true;
         Invoke("EndGame", 1f);
     }
@@ -144,8 +143,8 @@ public class GameManager : MonoBehaviour
         gameEnded = false;
         Time.timeScale = 1.0f;
         StartCoroutine("waitForReloadAnimFinish");
-        RectTransform rt = circleImg.GetComponent<RectTransform>();
-        rt.position = new Vector3(-2171, 0, 0);
+        //RectTransform rt = circleImg.GetComponent<RectTransform>();
+        //rt.position = new Vector3(-2171, 0, 0);
         exitAnim.SetTrigger("RestartBtnClicked");
         StartCoroutine("waitForReloadAnimFinish");
     }

@@ -6,10 +6,12 @@ public class Belt : MonoBehaviour
 {
     public float speed;
     Rigidbody rb;
- //   public Vector3 direction;
-//    public List<GameObject> onBelt;
 
-    // Start is called before the first frame update
+    public float time = 0;
+    public float speedUpTime;
+    [SerializeField] private float speedUpperBound = 3.0f;
+    [SerializeField] private float speedUpRate = 0.2f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -17,28 +19,14 @@ public class Belt : MonoBehaviour
 
     void FixedUpdate()
     {
+        time += Time.deltaTime;
+        if (time > speedUpTime && speed<speedUpperBound)
+        {
+            speed += speedUpRate;
+            time = 0;
+        }
         Vector3 pos = rb.position;
         rb.position -= Vector3.back * speed * Time.fixedDeltaTime;
         rb.MovePosition(pos);
     }
-    // Update is called once per frame
-    /*void Update()
-    {
-        for (int i = 0; i <= onBelt.Count - 1; i++)
-        {
-            onBelt[i].GetComponent<Rigidbody>().velocity = speed * direction * Time.deltaTime;
-        }
-    }
-
-    // When something collides with the belt
-    private void OnCollisionEnter(Collision collision)
-    {
-        onBelt.Add(collision.gameObject);
-    }
-
-    // When something leaves the belt
-    private void OnCollisionExit(Collision collision)
-    {
-        onBelt.Remove(collision.gameObject);
-    }*/
 }
