@@ -18,8 +18,11 @@ public class CameraFollow : MonoBehaviour
        
     void LateUpdate()                                                                          
     {
-        Vector3 targetPos = target.position - offset;                                          
-        targetPos.y = transform.position.y;                                                    
-        transform.position = Vector3.Lerp(transform.position, targetPos, smoothAmount);        
+        if (!GameManager.S.GameEnded)
+        {
+            Vector3 targetPos = target.position - offset;
+            targetPos.y = transform.position.y;
+            transform.position = Vector3.Lerp(transform.position, targetPos, smoothAmount);
+        }
     }
 }

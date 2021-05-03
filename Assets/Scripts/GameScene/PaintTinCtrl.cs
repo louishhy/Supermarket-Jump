@@ -7,12 +7,14 @@ public class PaintTinCtrl : MonoBehaviour
     private void ActivateSplash()
     {
         AfterEffectsManager.AEM.SplashOn(splashTime);
+        CommonButtonSoundPlay.CBSP.PlayTinCrash();
+        CommonButtonSoundPlay.CBSP.PlaySplash();
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
         ActivateSplash();
-        Destroy(gameObject);
+        Destroy(gameObject, 1.5f);
     }
 }

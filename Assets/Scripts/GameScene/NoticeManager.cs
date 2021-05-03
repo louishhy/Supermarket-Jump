@@ -35,5 +35,10 @@ public class NoticeManager : MonoBehaviour
     public void SetText(int obstacleID)
     {
         descriptionText.text = obstacleNarrations[obstacleID];
+        if (obstacleID == GameManager.CHAIR || obstacleID == GameManager.JACK_IN_THE_BOX)
+        {
+            descriptionText.color = Color.blue;
+        }
+        else descriptionText.color = Color.white;
     }
 }

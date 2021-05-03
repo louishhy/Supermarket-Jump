@@ -42,7 +42,7 @@ public class GroupLogoScene : MonoBehaviour
 
     void loadMenuScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);    //Load next scene.
+        SceneManager.LoadScene(1);    //Load next scene.
     }
     
 }

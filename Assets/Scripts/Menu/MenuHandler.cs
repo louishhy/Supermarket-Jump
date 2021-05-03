@@ -27,6 +27,7 @@ public class MenuHandler : MonoBehaviour
 
     public void startingGame()
     {
+        CommonButtonSoundPlay.CBSP.PlayGameStart();
         if (intoGameAnim != null) intoGameAnim.SetTrigger("IntoGame");
         if (menuAnim != null) menuAnim.SetTrigger("IntoGame");
         StartCoroutine("loadGame");
@@ -44,5 +45,11 @@ public class MenuHandler : MonoBehaviour
             StartCoroutine("loadGame");
         }
         
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitted Game");
+        Application.Quit();
     }
 }

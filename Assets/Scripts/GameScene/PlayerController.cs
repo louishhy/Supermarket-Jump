@@ -12,8 +12,13 @@ public class PlayerController : MonoBehaviour
     public float jumpPower;             
     public bool doJump;                
     public bool isGround = true;
+    [SerializeField] private GameObject soundRefPoint;
+    [SerializeField] private AudioClip jumpSound;
+    [SerializeField] private float jumpPlayingSound = 1.0f;
     [SerializeField] private float chargeDeadZone = 0.5f;
     [SerializeField] private float frenzyDuration = 5.0f;
+    [SerializeField] private float defaultLocalScale = 0.25f;
+    [SerializeField] private AudioClip collisionSound;
 
     void Start()
     {
@@ -26,13 +31,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && timer < maxChargeTime && isGround == true)                                                      
         {
             timer += Time.deltaTime;                                                                                    
-            transform.localScale = new Vector3(1, 0.5f + ((maxChargeTime - timer) / maxChargeTime) / 2, 1) * 0.2f;      
+            transform.localScale = new Vector3(1, 0.5f + ((maxChargeTime - timer) / maxChargeTime) / 2, 1) * defaultLocalScale;      
         }                                                                                                               
                                                                                                                         
         if (Input.GetKeyUp(KeyCode.Space)  && isGround == true)
         {
             doJump = true;                                                                                              
-            transform.localScale = Vector3.one * 0.2f;
+            transform.localScale = Vector3.one * defaultLocalScale;
         }
     }
 
@@ -48,6 +53,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
+        AudioSource.PlayClipAtPoint(jumpSound, soundRefPoint.transform.position, jumpPlayingSound);
         Vector3 dir = transform.forward;                         
         dir.y = 2;                                                                                                    
         rb.velocity = dir * jumpPower * timer;
@@ -75,13 +81,14 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.collider.gameObject.tag == "Obstacle")
         {
+            AudioSource.PlayClipAtPoint(collisionSound, soundRefPoint.transform.position, 1.0f);
             isGround = true;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "InvincibleTrigger")
+        if(other.gameObject.tag == "InvincibleTrigger" && !GameManager.S.IsFrenzy)
         {
             FrenzyModeOn();
         }
@@ -89,6 +96,7 @@ public class PlayerController : MonoBehaviour
 
     private void FrenzyModeOn()
     {
+        CommonButtonSoundPlay.CBSP.PlayFrenzyIn();
         AfterEffectsManager.AEM.setInvincibleEffect(true);
         GameManager.S.SetFrenzy(true);
         Invoke("FrenzyModeOff", frenzyDuration);

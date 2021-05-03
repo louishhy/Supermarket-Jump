@@ -130,6 +130,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: finalBottle
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 64443bb536e242d4390a1dfce43bcd42, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64443bb536e242d4390a1dfce43bcd42, type: 3}
 --- !u!1 &7262689156834244706 stripped

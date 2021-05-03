@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager S;
+
     //Object index description
     public const int CHAIR = 0;
     public const int BASKET = 1;
@@ -16,7 +18,10 @@ public class GameManager : MonoBehaviour
     public const int JACK_IN_THE_BOX = 5;
     public const int PAINT_TIN = 6;
 
-    public static GameManager S;
+    //Object probability distribution array. Roll 100.
+    [SerializeField] private Vector2[] probabilityBounds = new Vector2[7];
+
+    
     [SerializeField] private GameObject endGameCanvas;
     [SerializeField] private Animator anim;
     [SerializeField] private Animator exitAnim;
@@ -24,11 +29,33 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float survivedTime;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text scoreTextOnGUI;
+    [SerializeField] private bool gameStarted = false;
+    public bool GameStarted
+    {
+        get
+        {
+            return gameStarted;
+        }
+    }
     [SerializeField] private bool gameEnded = false;
+    public bool GameEnded
+    {
+        get
+        {
+            return gameEnded;
+        }
+    }
     [SerializeField] private Image circleImg;
     [SerializeField] private Belt belt;
     [SerializeField] private float beginningBeltSpeed = 1.0f;
     [SerializeField] private bool isFrenzy = false;
+    public bool IsFrenzy
+    {
+        get
+        {
+            return isFrenzy;
+        }
+    }
     [SerializeField] private float frenzyBonusRate = 5.0f;
     [SerializeField] private GameObject frenzyNotice;
 
@@ -64,6 +91,7 @@ public class GameManager : MonoBehaviour
         if (asi.IsName("Menu-to-game-game") && asi.normalizedTime > 1.0f)
         {
             Debug.Log("Play finished!");
+            gameStarted = true;
             belt.speed = beginningBeltSpeed;
         }
         else
@@ -75,7 +103,7 @@ public class GameManager : MonoBehaviour
     void FixedUpdate()
     {
         time += Time.deltaTime;
-        if(time > generateTime)
+        if(time > generateTime && gameStarted)
         {
             GenerateNewCube(GenerateIndex());
             SetGenerateTime();
@@ -119,7 +147,17 @@ public class GameManager : MonoBehaviour
 
     public int GenerateIndex()
     {
-        int index = Random.Range(0, 7);
+        int roll = Random.Range(0, 101);
+        int index = -1;
+        for (int i = 0; i<probabilityBounds.Length; i++)
+        {
+            //Set to negative number if you don't to want to generate a certain object at all.
+            if (roll>=probabilityBounds[i].x && roll < probabilityBounds[i].y)
+            {
+                index = i;
+                break;
+            }
+        }
         return index;
     }
 
@@ -140,7 +178,6 @@ public class GameManager : MonoBehaviour
 
     public void reloadLevel()
     {
-        gameEnded = false;
         Time.timeScale = 1.0f;
         StartCoroutine("waitForReloadAnimFinish");
         //RectTransform rt = circleImg.GetComponent<RectTransform>();
