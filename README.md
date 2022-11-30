@@ -1,9 +1,7 @@
 # Supermarket Jump!
-A mini leisure parkour game project based on Unity and Blender.
-
 *An HKU COMP3329 project*
 
-
+A mini leisure parkour game project based on Unity and Blender.
 
 Project page at HKU Faculty of Engineering 4th InnoShow: https://innoacademy.engg.hku.hk/supermarket_jump/
 
